@@ -1,51 +1,40 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '../entities/user.interface';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { User } from '../entities/user.entity';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  private users: User[] = [];
-  private nextId = 1;
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
 
-  findAll(): User[] {
-    return this.users;
+  async findAll(): Promise<User[]> {
+    return await this.userRepository.find();
   }
 
-  findOne(id: User['id']): User | undefined {
-    return this.users.find((el) => el.id === id);
+  async findOne(id: User['id']): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id });
+    if (!user) throw new NotFoundException(`User ${id} not found`);
+    return user;
   }
 
-  create(payload: CreateUserDto): User | undefined {
-    const newUser = {
-      id: this.nextId,
-      ...payload,
-    };
-    this.users.push(newUser);
-    this.nextId++;
-    return this.findOne(newUser.id);
+  async create(payload: CreateUserDto): Promise<User> {
+    const newUser = this.userRepository.create(payload);
+    return this.userRepository.save(newUser);
   }
 
-  update(id: User['id'], payload: UpdateUserDto): User | undefined {
-    const updatedUser = {
-      id,
-      ...payload,
-    };
-
-    const index = this.users.findIndex((el) => el.id === id);
-    if (index === -1) {
-      return undefined;
-    }
-    this.users[index] = updatedUser;
-    return this.findOne(updatedUser.id);
+  async update(id: User['id'], payload: UpdateUserDto): Promise<User> {
+    const user = await this.findOne(id);
+    Object.assign(user, payload);
+    return this.userRepository.save(user);
   }
 
-  remove(id: User['id']): Boolean {
-    const index = this.users.findIndex((el) => el.id === id);
-    if (index === -1) {
-      return false;
-    }
-    this.users.splice(index, 1);
-    return true;
+  async remove(id: User['id']): Promise<void> {
+    const user = await this.findOne(id);
+    await this.userRepository.remove(user);
   }
 }
