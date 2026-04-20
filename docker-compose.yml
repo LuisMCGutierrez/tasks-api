@@ -1,0 +1,35 @@
+# Aquí comienza la definición de todos los contenedores (servicios) que quieres correr.
+services:
+  # 'db' es el nombre interno del servicio dentro de la red de Docker.
+  db:
+    # Indica la imagen oficial que se descargará de Docker Hub (PostgreSQL versión 15).
+    image: postgres:16
+
+    # El nombre que tendrá el contenedor al ejecutarse (útil para identificarlo en 'docker ps').
+    container_name: nest-db
+
+    # Política de reinicio: si el contenedor falla o la PC se reinicia,
+    # Docker lo levantará automáticamente, a menos que lo detengas tú manualmente.
+    restart: unless-stopped
+
+    # Variables de entorno: son las "llaves" para configurar la base de datos por primera vez.
+    environment:
+      POSTGRES_USER: nest # El nombre del usuario administrador.
+      POSTGRES_PASSWORD: nest123 # La contraseña de dicho usuario.
+      POSTGRES_DB: tasks_db # El nombre de la base de datos que se creará al iniciar.
+
+    # Mapeo de puertos: [Puerto en tu computadora] : [Puerto dentro del contenedor].
+    # El 5432 es el puerto estándar de PostgreSQL.
+    ports:
+      - '5432:5432'
+
+    # Persistencia de datos: permite que la información no se borre al apagar el contenedor.
+    # Conecta el volumen 'postgres_data' con la ruta donde Postgres guarda los archivos reales.
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+# Sección para declarar los volúmenes que se usarán.
+volumes:
+  # Definimos 'postgres_data' como un volumen gestionado por Docker.
+  # Esto asegura que tus usuarios y tablas sobrevivan si borras el contenedor.
+  postgres_data:
