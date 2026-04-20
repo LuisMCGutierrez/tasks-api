@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { User } from '../entities/user.interface';
+import { CreateUserDto } from '../dtos/create-user.dto';
+import { UpdateUserDto } from '../dtos/update-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -14,26 +16,20 @@ export class UsersService {
     return this.users.find((el) => el.id === id);
   }
 
-  create(name: User['name'], email: User['email']): User | undefined {
+  create(payload: CreateUserDto): User | undefined {
     const newUser = {
       id: this.nextId,
-      name,
-      email,
+      ...payload,
     };
     this.users.push(newUser);
     this.nextId++;
     return this.findOne(newUser.id);
   }
 
-  update(
-    id: User['id'],
-    name: User['name'],
-    email: User['email'],
-  ): User | undefined {
+  update(id: User['id'], payload: UpdateUserDto): User | undefined {
     const updatedUser = {
       id,
-      name,
-      email,
+      ...payload,
     };
 
     const index = this.users.findIndex((el) => el.id === id);
