@@ -33,4 +33,7 @@ export class User {
   // cada vez que modificas cualquier campo de este usuario.
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @Column({ select: false })
+  password: string;
 }
