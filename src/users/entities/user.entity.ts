@@ -6,6 +6,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+export enum Roles {
+  ADMIN = 'admin',
+  USER = 'user',
+}
+
 // Este decorador le dice a TypeORM que esta clase representa una tabla en la DB.
 // 'users' es el nombre que tendrá la tabla físicamente.
 @Entity('users')
@@ -36,4 +41,7 @@ export class User {
 
   @Column({ select: false })
   password: string;
+
+  @Column({ type: 'enum', enum: Roles, default: Roles.USER })
+  role: Roles;
 }
