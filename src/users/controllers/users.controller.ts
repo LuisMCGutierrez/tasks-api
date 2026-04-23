@@ -14,14 +14,14 @@ import {
 import { UsersService } from '../services/users.service';
 import { CreateUserDto } from '../dtos/create-user.dto';
 import { UpdateUserDto } from '../dtos/update-user.dto';
-import { JwtAuthGuarth } from 'src/auth/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 import { RolesGuard } from 'src/auth/guards/roles.guard';
 import { Roles } from 'src/auth/decorators/roles.decorator';
 import { User, Roles as UserRole } from '../entities/user.entity';
 import { CurrentUser } from 'src/auth/decorators/current-user.decorator';
 
 @Controller('users')
-@UseGuards(JwtAuthGuarth, RolesGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 

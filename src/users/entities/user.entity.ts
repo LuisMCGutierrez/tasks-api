@@ -1,9 +1,11 @@
+import { Task } from 'src/tasks/entities/task.entity';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from 'typeorm';
 
 export enum Roles {
@@ -44,4 +46,7 @@ export class User {
 
   @Column({ type: 'enum', enum: Roles, default: Roles.USER })
   role: Roles;
+
+  @OneToMany(() => Task, (task) => task.user)
+  tasks: Task[];
 }
